@@ -5,9 +5,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from app.content import get_home, get_post, list_posts
+from app.mcp_server import auth, mcp
 
-app = FastAPI(title="Blog")
+mcp_app = mcp.http_app(path="/")
+app = FastAPI(title="Blog", lifespan=mcp_app.lifespan)
 templates = Jinja2Templates(directory="app/templates")
+
+for route in auth.get_well_known_routes(mcp_path="/"):
+    app.routes.insert(0, route)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -28,10 +33,7 @@ async def post(request: Request, slug: str):
     )
 
 
-# FastMCP layer can be mounted here later:
-# from fastmcp import FastMCP
-# mcp = FastMCP("blog")
-# mcp.mount(app)
+app.mount("/mcp", mcp_app)
 
 if __name__ == "__main__":
     import uvicorn
