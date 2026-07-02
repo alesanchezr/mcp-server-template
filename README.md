@@ -57,7 +57,7 @@ The MCP endpoint is at `/mcp/`. It uses OAuth 2.1 with Dynamic Client Registrati
 
 1. Deploy the app with `PUBLIC_URL` set to your public domain
 2. In Claude.ai → Settings → Connectors → Add MCP server
-3. Enter `https://your-domain/mcp/`
+3. Enter `https://your-domain/mcp` (no trailing slash)
 4. Claude discovers OAuth metadata, registers via DCR, and opens the login page
 5. Click **Log in** to authorize
 6. Ask Claude to create a post, e.g. "Create a blog post titled Hello MCP with slug hello-mcp"

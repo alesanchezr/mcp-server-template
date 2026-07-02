@@ -16,6 +16,7 @@ from mcp.server.auth.provider import (
     construct_redirect_uri,
 )
 from mcp.shared.auth import OAuthClientInformationFull
+from pydantic import AnyHttpUrl
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from starlette.routing import Route
@@ -47,6 +48,13 @@ class EducationalOAuthProvider(InMemoryOAuthProvider):
             required_scopes=["blog:write"],
         )
         self._pending_auth: dict[str, PendingAuth] = {}
+
+    def _get_resource_url(self, path: str | None = None) -> AnyHttpUrl | None:
+        """Advertise resource URL without trailing slash for client compatibility."""
+        url = super()._get_resource_url(path)
+        if url is None:
+            return None
+        return AnyHttpUrl(str(url).rstrip("/"))
 
     async def authorize(
         self,

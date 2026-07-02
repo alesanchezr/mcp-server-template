@@ -11,7 +11,7 @@ mcp_app = mcp.http_app(path="/")
 app = FastAPI(title="Blog", lifespan=mcp_app.lifespan)
 templates = Jinja2Templates(directory="app/templates")
 
-for route in auth.get_well_known_routes(mcp_path="/"):
+for route in auth.get_well_known_routes(mcp_path=None):
     app.routes.insert(0, route)
 
 
