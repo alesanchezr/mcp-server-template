@@ -164,6 +164,13 @@ class EducationalOAuthProvider(InMemoryOAuthProvider):
         return routes
 
 
+def _get_public_url() -> str:
+    if public_url := os.environ.get("PUBLIC_URL"):
+        return public_url.rstrip("/")
+    if domain := os.environ.get("RAILWAY_PUBLIC_DOMAIN"):
+        return f"https://{domain}".rstrip("/")
+    return "http://localhost:8000"
+
+
 def create_oauth_provider() -> EducationalOAuthProvider:
-    public_url = os.environ.get("PUBLIC_URL", "http://localhost:8000").rstrip("/")
-    return EducationalOAuthProvider(base_url=f"{public_url}/mcp")
+    return EducationalOAuthProvider(base_url=f"{_get_public_url()}/mcp")

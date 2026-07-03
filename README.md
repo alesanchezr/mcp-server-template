@@ -43,7 +43,7 @@ The MCP endpoint is at `/mcp/`. It uses OAuth 2.1 with Dynamic Client Registrati
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `PUBLIC_URL` | Yes (production) | Public base URL, e.g. `https://your-app.railway.app`. Defaults to `http://localhost:8000` locally. |
+| `PUBLIC_URL` | No on Railway | Public base URL with scheme, e.g. `https://your-app.railway.app`. On Railway, `RAILWAY_PUBLIC_DOMAIN` is used automatically if this is unset. Defaults to `http://localhost:8000` locally. Set `PUBLIC_URL` only if you use a custom domain. |
 
 ### OAuth discovery endpoints
 
@@ -55,7 +55,7 @@ The MCP endpoint is at `/mcp/`. It uses OAuth 2.1 with Dynamic Client Registrati
 
 ### Connect from Claude.ai
 
-1. Deploy the app with `PUBLIC_URL` set to your public domain
+1. Deploy the app and generate a Railway domain (no env vars required)
 2. In Claude.ai → Settings → Connectors → Add MCP server
 3. Enter `https://your-domain/mcp` (no trailing slash)
 4. Claude discovers OAuth metadata, registers via DCR, and opens the login page
@@ -85,7 +85,7 @@ You should see JSON with a `registration_endpoint` pointing to `/mcp/register`.
 3. Choose **Deploy from GitHub repo** and select this repository
 4. Railway auto-detects Python via `requirements.txt` and uses `railway.toml` for the start command
 5. Your app gets a public URL under **Settings → Networking → Generate Domain**
-6. Set environment variable `PUBLIC_URL` to your Railway domain (e.g. `https://your-app.up.railway.app`)
+6. Only set `PUBLIC_URL` if you use a custom domain (e.g. `https://yourdomain.com`). Otherwise Railway's `RAILWAY_PUBLIC_DOMAIN` is picked up automatically.
 
 ### Persistence note
 
