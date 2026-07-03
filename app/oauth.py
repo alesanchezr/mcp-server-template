@@ -75,15 +75,38 @@ class EducationalOAuthProvider(InMemoryOAuthProvider):
         )
         return f"{str(self.base_url).rstrip('/')}/login?txn_id={txn_id}"
 
+    def _resolve_scopes(
+        self,
+        client: OAuthClientInformationFull,
+        params: AuthorizationParams,
+    ) -> list[str]:
+        """Resolve scopes for the auth code, defaulting to client/default scopes.
+
+        Claude.ai often omits scope on /authorize; without a fallback the issued
+        token has no scopes and MCP requests fail with 403 insufficient_scope.
+        """
+        requested = list(params.scopes) if params.scopes else []
+        if client.scope:
+            allowed = set(client.scope.split())
+            if requested:
+                return [s for s in requested if s in allowed]
+            return list(allowed)
+
+        if requested:
+            return requested
+
+        options = self.client_registration_options
+        if options and options.default_scopes:
+            return list(options.default_scopes)
+
+        return []
+
     def _issue_authorization_code(
         self,
         client: OAuthClientInformationFull,
         params: AuthorizationParams,
     ) -> str:
-        scopes_list = params.scopes if params.scopes is not None else []
-        if client.scope:
-            client_allowed_scopes = set(client.scope.split())
-            scopes_list = [s for s in scopes_list if s in client_allowed_scopes]
+        scopes_list = self._resolve_scopes(client, params)
 
         if client.client_id is None:
             raise AuthorizeError(
