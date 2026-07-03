@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from app.content import create_post
+from app.content import create_post, format_validation_errors, validate_post
 from app.oauth import create_oauth_provider
 
 auth = create_oauth_provider()
@@ -10,6 +10,15 @@ mcp = FastMCP(
     instructions="MCP server for creating blog posts on this markdown blog.",
     auth=auth,
 )
+
+
+@mcp.tool()
+def validate_blog_post(slug: str, title: str, content: str) -> str:
+    """Validate a blog post before creating it. Returns feedback if invalid."""
+    errors = validate_post(slug, title, content)
+    if errors:
+        return format_validation_errors(errors)
+    return "Post is valid and ready to create."
 
 
 @mcp.tool()
