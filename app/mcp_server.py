@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-from app.content import create_post, format_validation_errors, validate_post
+from app.content import create_post, list_posts
 from app.oauth import create_oauth_provider
 
 auth = create_oauth_provider()
@@ -13,12 +13,9 @@ mcp = FastMCP(
 
 
 @mcp.tool()
-def validate_blog_post(slug: str, title: str, content: str) -> str:
-    """Validate a blog post before creating it. Returns feedback if invalid."""
-    errors = validate_post(slug, title, content)
-    if errors:
-        return format_validation_errors(errors)
-    return "Post is valid and ready to create."
+def list_blog_posts() -> list[dict]:
+    """List all blog posts with their slugs and titles."""
+    return list_posts()
 
 
 @mcp.tool()
